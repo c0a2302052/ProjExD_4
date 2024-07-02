@@ -133,6 +133,7 @@ class Bomb(pg.sprite.Sprite):
         self.rect.centerx = emy.rect.centerx
         self.rect.centery = emy.rect.centery+emy.rect.height//2
         self.speed = 6
+        self.state = "active"
 
     def update(self):
         """
@@ -249,6 +250,27 @@ class Score:
         screen.blit(self.image, self.rect)
 
 
+class EMP:
+
+    def __init__(self, emy: pg.sprite.Group, bomb: pg.sprite.Group, screen: pg.Surface):
+        for i in emy:
+            i.interval = float("inf")
+            i.image = pg.transform.laplacian(i.image)
+            i.image.set_colorkey((0, 0, 0))
+        for j in bomb:
+            j.speed = j.speed / 2
+            j.state = "inactive"
+        self.image = pg.Surface((1100, 650))
+        self.rect = self.image.get_rect()
+        pg.draw.rect(self.image, (255, 255, 0), (0, 0, 1100, 650))
+        self.image.set_alpha(100)
+        screen.blit(self.image, (0, 0))
+        pg.display.update()
+        time.sleep(0.05)
+    def update(self, screen):
+        pass
+
+
 class Gravity(pg.sprite.Sprite):
     """
     重力場の出現(爆弾と敵機を一掃)
@@ -281,6 +303,7 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
+    emps = pg.sprite.Group()
     gravs = pg.sprite.Group()
 
     tmr = 0
@@ -292,6 +315,9 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            if event.type == pg.KEYDOWN and event.key == pg.K_e and score.value >= 20:
+                score.value -= 20
+                emps = EMP(emys, bombs, screen)
             if event.type == pg.KEYDOWN and event.key == pg.K_LSHIFT:
                 #  左シフト押下中はスピードが20になる
                 bird.speed = 20

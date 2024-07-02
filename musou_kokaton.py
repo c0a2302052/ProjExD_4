@@ -239,7 +239,7 @@ class Score:
     def __init__(self):
         self.font = pg.font.Font(None, 50)
         self.color = (0, 0, 255)
-        self.value = 301
+        self.value = 0
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         self.rect = self.image.get_rect()
         self.rect.center = 100, HEIGHT-50
@@ -292,6 +292,13 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            if event.type == pg.KEYDOWN and event.key == pg.K_LSHIFT:
+                #  左シフト押下中はスピードが20になる
+                bird.speed = 20
+                bird.update(key_lst, screen)
+            if event.type == pg.KEYUP and event.key == pg.K_LSHIFT:
+                #  元のスピードに戻る
+                bird.speed = 10
 
             if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
                 #  重力場発生

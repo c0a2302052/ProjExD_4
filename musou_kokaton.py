@@ -244,7 +244,7 @@ class Score:
 
 class Gravity(pg.sprite.Sprite):
     """
-    重力場の出現
+    重力場の出現(爆弾と敵機を一掃)
     """
 
     def __init__(self, life):
@@ -257,10 +257,8 @@ class Gravity(pg.sprite.Sprite):
 
     def update(self):
         self.life -= 1
-
         if self.life < 0:
             self.kill()
-        
         if check_bound(self.rect) != (True, True):
             self.kill()
 

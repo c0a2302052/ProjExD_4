@@ -149,14 +149,14 @@ class Beam(pg.sprite.Sprite):
     """
     ビームに関するクラス
     """
-    def __init__(self, bird: Bird): 
+    def __init__(self, bird: Bird, angle0=0): 
         """
         ビーム画像Surfaceを生成する
         引数 bird：ビームを放つこうかとん
         """
         super().__init__()
         self.vx, self.vy = bird.dire
-        angle = math.degrees(math.atan2(-self.vy, self.vx))
+        angle = math.degrees(math.atan2(-self.vy, self.vx)+angle0)
         self.image = pg.transform.rotozoom(pg.image.load(f"fig/beam.png"), angle, 2.0)
         self.vx = math.cos(math.radians(angle))
         self.vy = -math.sin(math.radians(angle))
@@ -173,6 +173,15 @@ class Beam(pg.sprite.Sprite):
         self.rect.move_ip(self.speed*self.vx, self.speed*self.vy)
         if check_bound(self.rect) != (True, True):
             self.kill()
+
+
+class NeoBeam(Beam):
+    def __init__(self, bird: Bird, num: int):
+        super.__init__(bird)
+        self.num = num
+
+    def gen_beams():
+        beams_lst = [Beam(i) for i in range(-50, 50, )]
 
 
 class Explosion(pg.sprite.Sprite):
@@ -275,7 +284,6 @@ class Gravity(pg.sprite.Sprite):
     """
     重力場の出現(爆弾と敵機を一掃)
     """
-
     def __init__(self, life):
         super().__init__()
         self.life = life
@@ -319,16 +327,14 @@ def main():
                 score.value -= 20
                 emps = EMP(emys, bombs, screen)
             if event.type == pg.KEYDOWN and event.key == pg.K_LSHIFT:
-                #  左シフト押下中はスピードが20になる
-                bird.speed = 20
+                bird.speed = 20 #  左シフト押下中はスピードを20にする
                 bird.update(key_lst, screen)
             if event.type == pg.KEYUP and event.key == pg.K_LSHIFT:
-                #  元のスピードに戻る
-                bird.speed = 10
+                bird.speed = 10 #  元のスピードに戻る
 
             if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
-                #  重力場発生
-                if score.value>200:
+                #  リターンキー(エンターキー)押下で重力場発生
+                if score.value > 200:
                     gravs.add(Gravity(400))
                     score.value -= 200   
 
